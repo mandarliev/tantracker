@@ -31,6 +31,13 @@ import {
 import { Button } from '#/components/ui/button'
 
 export const Route = createRootRoute({
+  notFoundComponent() {
+    return (
+      <div className="text-3xl text-center py-10 text-muted-foreground">
+        Oops! Page not found
+      </div>
+    )
+  },
   head: () => ({
     meta: [
       {

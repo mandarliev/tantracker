@@ -1,12 +1,11 @@
-import { Button } from '#/components/ui/button'
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/')({ component: Home })
+// Change this from '/' to '/_authenticated/'
+export const Route = createFileRoute('/')({
+  component: Home,
+  // Your loader and other configs stay here
+})
 
 function Home() {
-  return (
-    <div className="p-8">
-      <Button>Test</Button>
-    </div>
-  )
+  return <div></div>
 }
