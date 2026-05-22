@@ -15,6 +15,7 @@ import { CalendarIcon } from 'lucide-react'
 import { format } from 'date-fns'
 import { Calendar } from './ui/calendar'
 import { Input } from './ui/input'
+import type { categoriesTable } from '#/db/schema'
 
 const transactionFormSchema = z.object({
   transactionType: z.enum(['income', 'expense']),
@@ -55,7 +56,11 @@ const formConfig = {
   any
 >
 
-export function TransactionForm() {
+export function TransactionForm({
+  categories,
+}: {
+  categories: (typeof categoriesTable.$inferSelect)[]
+}) {
   const form = useForm(formConfig)
 
   const handleSubmit = (data: z.infer<typeof transactionFormSchema>) => {
@@ -107,19 +112,42 @@ export function TransactionForm() {
             return (
               <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name}>Category</FieldLabel>
-                <Select
-                  name={field.name}
-                  value={field.state.value.toString()}
-                  onValueChange={(value) => field.handleChange(Number(value))}
-                  disabled={form.state.isSubmitting}
+                {/* 1. Subscribe to the real-time form state value for transactionType */}
+                <form.Subscribe
+                  selector={(state) => state.values.transactionType}
                 >
-                  <SelectTrigger aria-invalid={isInvalid}>
-                    <SelectValue placeholder="Category" />
-                  </SelectTrigger>
-                  <SelectContent position="item-aligned">
-                    {/* Options */}
-                  </SelectContent>
-                </Select>
+                  {(currentType) => {
+                    // 2. Filter the categories array to match the active type ('income' or 'expense')
+                    const filteredCategories = categories.filter(
+                      (cat) => cat.type === currentType,
+                    )
+
+                    return (
+                      <Select
+                        name={field.name}
+                        value={field.state.value.toString()}
+                        onValueChange={(value) =>
+                          field.handleChange(Number(value))
+                        }
+                        disabled={form.state.isSubmitting}
+                      >
+                        <SelectTrigger aria-invalid={isInvalid}>
+                          <SelectValue placeholder="Category" />
+                        </SelectTrigger>
+                        <SelectContent position="item-aligned">
+                          {filteredCategories.map((category) => (
+                            <SelectItem
+                              key={category.id}
+                              value={category.id.toString()}
+                            >
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )
+                  }}
+                </form.Subscribe>
                 {isInvalid && (
                   <p className="text-xs text-destructive mt-1">
                     {field.state.meta.errors
