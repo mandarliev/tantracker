@@ -1,6 +1,9 @@
 import { createServerFn } from '@tanstack/react-start'
 import { addDays } from 'date-fns'
 import z from 'zod'
+import authMiddleware from '../../authMiddleware'
+import { transactions } from '#/db/schema'
+import { db } from '../db/index.ts'
 
 const transactionSchema = z.object({
   categoryId: z.coerce.number<number>().positive('Please select a category'),
@@ -18,7 +21,22 @@ const transactionSchema = z.object({
 export const createTransaction = createServerFn({
   method: 'POST',
 })
+  .middleware([authMiddleware])
   .inputValidator((data: z.infer<typeof transactionSchema>) =>
     transactionSchema.parse(data),
   )
-  .handler(async ({ data }) => {})
+  .handler(async ({ data, context }) => {
+    const userId = context.userId
+    const transaction = await db
+      .insert(transactions)
+      .values({
+        userId,
+        amount: data.amount.toString(),
+        description: data.description,
+        categoryId: data.categoryId,
+        transactionDate: data.transactionDate,
+      })
+      .returning()
+
+    return transaction
+  })

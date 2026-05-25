@@ -6,8 +6,8 @@ export async function getClient() {
   if (!process.env.DATABASE_URL) {
     return undefined
   }
-  if (!client) {
-    client = await neon(process.env.DATABASE_URL!)
-  }
+
+  client = await neon(process.env.DATABASE_URL)
+
   return client
 }

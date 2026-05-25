@@ -1,8 +1,10 @@
 import type { transactionFormSchema } from '#/components/transaction-form'
 import { TransactionForm } from '#/components/transaction-form'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
+import { createTransaction } from '#/data/createTransaction'
 import { getCategories } from '#/data/getCategories'
 import { createFileRoute } from '@tanstack/react-router'
+import { format } from 'date-fns'
 import type z from 'zod'
 
 export const Route = createFileRoute(
@@ -20,6 +22,16 @@ function RouteComponent() {
 
   const handleSubmit = async (data: z.infer<typeof transactionFormSchema>) => {
     console.log('HANDLE SUBMIT', { data })
+    const transaction = await createTransaction({
+      data: {
+        amount: data.amount,
+        categoryId: data.categoryId,
+        description: data.description,
+        transactionDate: format(data.transactionDate, 'yyyy-MM-dd'), // YYYY-MM-DD
+      },
+    })
+
+    console.log({transaction})
   }
 
   return (
