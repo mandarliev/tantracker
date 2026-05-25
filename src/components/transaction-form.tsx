@@ -1,6 +1,6 @@
 import * as z from 'zod'
-import { useForm } from '@tanstack/react-form'
-import type { FormOptions } from '@tanstack/react-form'
+import { useForm, formOptions } from '@tanstack/react-form'
+
 import { Field, FieldGroup, FieldLabel } from './ui/field'
 import {
   Select,
@@ -12,17 +12,17 @@ import {
 import { Popover, PopoverTrigger, PopoverContent } from './ui/popover'
 import { Button } from './ui/button'
 import { CalendarIcon } from 'lucide-react'
-import { format } from 'date-fns'
+import { addDays, format } from 'date-fns'
 import { Calendar } from './ui/calendar'
 import { Input } from './ui/input'
 import type { categoriesTable } from '#/db/schema'
 
-const transactionFormSchema = z.object({
+export const transactionFormSchema = z.object({
   transactionType: z.enum(['income', 'expense']),
   categoryId: z.coerce.number<number>().positive('Please select a category'),
   transactionDate: z
     .date()
-    .max(new Date(), 'Transaction date cannot be in the future'),
+    .max(addDays(new Date(), 1), 'Transaction date cannot be in the future'),
   amount: z.coerce.number<number>().positive('Amount must be greater than 0'),
   description: z
     .string()
@@ -30,48 +30,40 @@ const transactionFormSchema = z.object({
     .max(300, 'Description must contain a maximum of 300 characters'),
 })
 
-const formConfig = {
+type TransactionFormData = z.infer<typeof transactionFormSchema>
+
+const formOpts = formOptions({
   defaultValues: {
     transactionType: 'income',
-    amount: 0,
     categoryId: 0,
+    amount: 0,
     description: '',
     transactionDate: new Date(),
   },
   validators: {
     onSubmit: transactionFormSchema,
   },
-} satisfies FormOptions<
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any
->
+})
 
 export function TransactionForm({
   categories,
+  onSubmit,
 }: {
   categories: (typeof categoriesTable.$inferSelect)[]
+  onSubmit: (data: TransactionFormData) => Promise<void>
 }) {
-  const form = useForm(formConfig)
-
-  const handleSubmit = (data: z.infer<typeof transactionFormSchema>) => {
-    console.log(data)
-  }
+  const form = useForm({
+    ...formOpts,
+    onSubmit: async ({ value }) => {
+      await onSubmit(value as TransactionFormData)
+    },
+  })
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault()
-        form.handleSubmit(handleSubmit)
+        form.handleSubmit()
       }}
     >
       <FieldGroup className="grid grid-cols-2 gap-y-5 gap-x-2">
@@ -85,7 +77,6 @@ export function TransactionForm({
               <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name}>Transaction Type</FieldLabel>
                 <Select
-                  disabled={form.state.isSubmitting}
                   name={field.name}
                   value={field.state.value}
                   onValueChange={field.handleChange}
@@ -129,7 +120,6 @@ export function TransactionForm({
                         onValueChange={(value) =>
                           field.handleChange(Number(value))
                         }
-                        disabled={form.state.isSubmitting}
                       >
                         <SelectTrigger aria-invalid={isInvalid}>
                           <SelectValue placeholder="Category" />
@@ -172,7 +162,6 @@ export function TransactionForm({
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
-                      disabled={form.state.isSubmitting}
                       variant="outline"
                       data-empty={!field.state.value}
                       className="w-full justify-start text-left font-normal aria-invalid:border-destructive data-[empty=true]:text-muted-foreground"
@@ -211,7 +200,6 @@ export function TransactionForm({
                   name={field.name}
                   type="number"
                   step={0.01}
-                  disabled={form.state.isSubmitting}
                   // Convert the number directly to a string without any conditional checks
                   value={String(field.state.value)}
                   onChange={(e) =>
@@ -247,7 +235,6 @@ export function TransactionForm({
                     id={field.name}
                     type="text"
                     className="w-full"
-                    disabled={form.state.isSubmitting}
                     name={field.name}
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
