@@ -30,6 +30,7 @@ import {
   UserButton,
 } from '@clerk/clerk-react'
 import { Button } from '#/components/ui/button'
+import { Toaster } from '#/components/ui/sonner'
 
 export const Route = createRootRoute({
   notFoundComponent() {
@@ -151,6 +152,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             </div>
           </nav>
           {children}
+          <Toaster />
           <TanStackDevtools
             config={{
               position: 'bottom-right',
