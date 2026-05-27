@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import * as z from 'zod'
+import { AllTransactions } from './-all-transactions'
 
 const today = new Date()
 
@@ -23,8 +24,23 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   validateSearch: searchSchema,
+  loaderDeps: ({ search }) => {
+    const today = new Date()
+
+    return {
+      month: search.month ?? today.getMonth() + 1,
+      year: search.year ?? today.getFullYear(),
+    }
+  },
+  loader: async ({ deps }) => {
+    return {
+      month: deps.month,
+      year: deps.year,
+    }
+  },
 })
 
 function RouteComponent() {
-  return <div>Hello "/_authenticated/dashboard/transactions/"!</div>
+  const { month, year } = Route.useLoaderData()
+  return <AllTransactions month={month} year={year} />
 }
