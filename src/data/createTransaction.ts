@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { addDays } from 'date-fns'
 import z from 'zod'
 import authMiddleware from '../../authMiddleware'
-import { transactions } from '#/db/schema'
+import { transactionsTable } from '#/db/schema'
 import { db } from '../db/index.ts'
 
 const transactionSchema = z.object({
@@ -28,7 +28,7 @@ export const createTransaction = createServerFn({
   .handler(async ({ data, context }) => {
     const userId = context.userId
     const transaction = await db
-      .insert(transactions)
+      .insert(transactionsTable)
       .values({
         userId,
         amount: data.amount.toString(),

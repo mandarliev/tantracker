@@ -70,6 +70,7 @@ export function TransactionForm({
         {/* Transaction Type */}
         <form.Field
           name="transactionType"
+          // biome-ignore lint/correctness/noChildrenProp: TanStack Form requires children as a render prop
           children={(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid
@@ -97,6 +98,7 @@ export function TransactionForm({
         {/* Category ID */}
         <form.Field
           name="categoryId"
+          // biome-ignore lint/correctness/noChildrenProp: TanStack Form requires children as a render prop
           children={(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid
@@ -153,6 +155,7 @@ export function TransactionForm({
         {/* Transaction Date */}
         <form.Field
           name="transactionDate"
+          // biome-ignore lint/correctness/noChildrenProp: TanStack Form requires children as a render prop
           children={(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid
@@ -189,6 +192,7 @@ export function TransactionForm({
         {/* Amount Field */}
         <form.Field
           name="amount"
+          // biome-ignore lint/correctness/noChildrenProp: TanStack Form requires children as a render prop
           children={(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid
@@ -225,6 +229,7 @@ export function TransactionForm({
         <div className="col-span-2 w-full">
           <form.Field
             name="description"
+            // biome-ignore lint/correctness/noChildrenProp: TanStack Form requires children as a render prop
             children={(field) => {
               const isInvalid =
                 field.state.meta.isTouched && !field.state.meta.isValid

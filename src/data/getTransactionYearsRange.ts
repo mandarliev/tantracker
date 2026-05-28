@@ -2,7 +2,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { auth } from '@clerk/tanstack-react-start/server'
 import { db } from '#/db/index.ts'
-import { transactions } from '#/db/schema'
+import { transactionsTable } from '#/db/schema'
 import { desc, eq } from 'drizzle-orm'
 
 export const getTransactionYearsRange = createServerFn({
@@ -13,10 +13,10 @@ export const getTransactionYearsRange = createServerFn({
     if (!userId) throw new Error('Unauthorized')
 
     const result = await db
-      .selectDistinct({ year: transactions.transactionDate }) // or use sql`EXTRACT(YEAR FROM transactionDate)`
-      .from(transactions)
-      .where(eq(transactions.userId, userId))
-      .orderBy(desc(transactions.transactionDate))
+      .selectDistinct({ year: transactionsTable.transactionDate }) // or use sql`EXTRACT(YEAR FROM transactionDate)`
+      .from(transactionsTable)
+      .where(eq(transactionsTable.userId, userId))
+      .orderBy(desc(transactionsTable.transactionDate))
 
     const years = [
       ...new Set(result.map((row) => new Date(row.year).getFullYear())),
