@@ -1,8 +1,8 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { db } from '#/db/index.ts'
-import { transactionsTable } from '#/db/schema'
-import { and, eq, gte, lte } from 'drizzle-orm'
+import { categoriesTable, transactionsTable } from '#/db/schema'
+import { and, desc, eq, gte, lte } from 'drizzle-orm'
 import { auth } from '@clerk/tanstack-react-start/server'
 import { format } from 'date-fns'
 
@@ -34,7 +34,13 @@ export const getTransactionsByMonth = createServerFn({
       )
 
       const result = await db
-        .select()
+        .select({
+          id: transactionsTable.id,
+          description: transactionsTable.amount,
+          transactionDate: transactionsTable.transactionDate,
+          category: categoriesTable.name,
+          transactionType: categoriesTable.type,
+        })
         .from(transactionsTable)
         .where(
           and(
@@ -43,7 +49,11 @@ export const getTransactionsByMonth = createServerFn({
             lte(transactionsTable.transactionDate, latestDate),
           ),
         )
-        .orderBy(transactionsTable.transactionDate)
+        .orderBy(desc(transactionsTable.transactionDate))
+        .leftJoin(
+          categoriesTable,
+          eq(transactionsTable.categoryId, categoriesTable.id),
+        )
 
       return result
     } catch (error) {
