@@ -17,7 +17,9 @@ import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedDashboardTransactionsLayoutRouteImport } from './routes/_authenticated/dashboard/transactions/_layout'
 import { Route as AuthenticatedDashboardTransactionsLayoutIndexRouteImport } from './routes/_authenticated/dashboard/transactions/_layout.index'
 import { Route as AuthenticatedDashboardTransactionsNewLayoutRouteImport } from './routes/_authenticated/dashboard/transactions/new/_layout'
+import { Route as AuthenticatedDashboardTransactionsTransactionIdLayoutRouteImport } from './routes/_authenticated/dashboard/transactions/$transactionId/_layout'
 import { Route as AuthenticatedDashboardTransactionsNewLayoutIndexRouteImport } from './routes/_authenticated/dashboard/transactions/new/_layout.index'
+import { Route as AuthenticatedDashboardTransactionsTransactionIdLayoutIndexRouteImport } from './routes/_authenticated/dashboard/transactions/$transactionId/_layout.index'
 
 const SignUpRoute = SignUpRouteImport.update({
   id: '/sign-up',
@@ -62,11 +64,24 @@ const AuthenticatedDashboardTransactionsNewLayoutRoute =
     path: '/dashboard/transactions/new',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedDashboardTransactionsTransactionIdLayoutRoute =
+  AuthenticatedDashboardTransactionsTransactionIdLayoutRouteImport.update({
+    id: '/dashboard/transactions/$transactionId/_layout',
+    path: '/dashboard/transactions/$transactionId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedDashboardTransactionsNewLayoutIndexRoute =
   AuthenticatedDashboardTransactionsNewLayoutIndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => AuthenticatedDashboardTransactionsNewLayoutRoute,
+  } as any)
+const AuthenticatedDashboardTransactionsTransactionIdLayoutIndexRoute =
+  AuthenticatedDashboardTransactionsTransactionIdLayoutIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () =>
+      AuthenticatedDashboardTransactionsTransactionIdLayoutRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -75,8 +90,10 @@ export interface FileRoutesByFullPath {
   '/sign-up': typeof SignUpRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/dashboard/transactions': typeof AuthenticatedDashboardTransactionsLayoutRouteWithChildren
+  '/dashboard/transactions/$transactionId': typeof AuthenticatedDashboardTransactionsTransactionIdLayoutRouteWithChildren
   '/dashboard/transactions/new': typeof AuthenticatedDashboardTransactionsNewLayoutRouteWithChildren
   '/dashboard/transactions/': typeof AuthenticatedDashboardTransactionsLayoutIndexRoute
+  '/dashboard/transactions/$transactionId/': typeof AuthenticatedDashboardTransactionsTransactionIdLayoutIndexRoute
   '/dashboard/transactions/new/': typeof AuthenticatedDashboardTransactionsNewLayoutIndexRoute
 }
 export interface FileRoutesByTo {
@@ -85,6 +102,7 @@ export interface FileRoutesByTo {
   '/sign-up': typeof SignUpRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/dashboard/transactions': typeof AuthenticatedDashboardTransactionsLayoutIndexRoute
+  '/dashboard/transactions/$transactionId': typeof AuthenticatedDashboardTransactionsTransactionIdLayoutIndexRoute
   '/dashboard/transactions/new': typeof AuthenticatedDashboardTransactionsNewLayoutIndexRoute
 }
 export interface FileRoutesById {
@@ -95,8 +113,10 @@ export interface FileRoutesById {
   '/sign-up': typeof SignUpRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/dashboard/transactions/_layout': typeof AuthenticatedDashboardTransactionsLayoutRouteWithChildren
+  '/_authenticated/dashboard/transactions/$transactionId/_layout': typeof AuthenticatedDashboardTransactionsTransactionIdLayoutRouteWithChildren
   '/_authenticated/dashboard/transactions/new/_layout': typeof AuthenticatedDashboardTransactionsNewLayoutRouteWithChildren
   '/_authenticated/dashboard/transactions/_layout/': typeof AuthenticatedDashboardTransactionsLayoutIndexRoute
+  '/_authenticated/dashboard/transactions/$transactionId/_layout/': typeof AuthenticatedDashboardTransactionsTransactionIdLayoutIndexRoute
   '/_authenticated/dashboard/transactions/new/_layout/': typeof AuthenticatedDashboardTransactionsNewLayoutIndexRoute
 }
 export interface FileRouteTypes {
@@ -107,8 +127,10 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/dashboard/'
     | '/dashboard/transactions'
+    | '/dashboard/transactions/$transactionId'
     | '/dashboard/transactions/new'
     | '/dashboard/transactions/'
+    | '/dashboard/transactions/$transactionId/'
     | '/dashboard/transactions/new/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -117,6 +139,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/dashboard'
     | '/dashboard/transactions'
+    | '/dashboard/transactions/$transactionId'
     | '/dashboard/transactions/new'
   id:
     | '__root__'
@@ -126,8 +149,10 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/_authenticated/dashboard/'
     | '/_authenticated/dashboard/transactions/_layout'
+    | '/_authenticated/dashboard/transactions/$transactionId/_layout'
     | '/_authenticated/dashboard/transactions/new/_layout'
     | '/_authenticated/dashboard/transactions/_layout/'
+    | '/_authenticated/dashboard/transactions/$transactionId/_layout/'
     | '/_authenticated/dashboard/transactions/new/_layout/'
   fileRoutesById: FileRoutesById
 }
@@ -196,12 +221,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardTransactionsNewLayoutRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/dashboard/transactions/$transactionId/_layout': {
+      id: '/_authenticated/dashboard/transactions/$transactionId/_layout'
+      path: '/dashboard/transactions/$transactionId'
+      fullPath: '/dashboard/transactions/$transactionId'
+      preLoaderRoute: typeof AuthenticatedDashboardTransactionsTransactionIdLayoutRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/dashboard/transactions/new/_layout/': {
       id: '/_authenticated/dashboard/transactions/new/_layout/'
       path: '/'
       fullPath: '/dashboard/transactions/new/'
       preLoaderRoute: typeof AuthenticatedDashboardTransactionsNewLayoutIndexRouteImport
       parentRoute: typeof AuthenticatedDashboardTransactionsNewLayoutRoute
+    }
+    '/_authenticated/dashboard/transactions/$transactionId/_layout/': {
+      id: '/_authenticated/dashboard/transactions/$transactionId/_layout/'
+      path: '/'
+      fullPath: '/dashboard/transactions/$transactionId/'
+      preLoaderRoute: typeof AuthenticatedDashboardTransactionsTransactionIdLayoutIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardTransactionsTransactionIdLayoutRoute
     }
   }
 }
@@ -219,6 +258,21 @@ const AuthenticatedDashboardTransactionsLayoutRouteChildren: AuthenticatedDashbo
 const AuthenticatedDashboardTransactionsLayoutRouteWithChildren =
   AuthenticatedDashboardTransactionsLayoutRoute._addFileChildren(
     AuthenticatedDashboardTransactionsLayoutRouteChildren,
+  )
+
+interface AuthenticatedDashboardTransactionsTransactionIdLayoutRouteChildren {
+  AuthenticatedDashboardTransactionsTransactionIdLayoutIndexRoute: typeof AuthenticatedDashboardTransactionsTransactionIdLayoutIndexRoute
+}
+
+const AuthenticatedDashboardTransactionsTransactionIdLayoutRouteChildren: AuthenticatedDashboardTransactionsTransactionIdLayoutRouteChildren =
+  {
+    AuthenticatedDashboardTransactionsTransactionIdLayoutIndexRoute:
+      AuthenticatedDashboardTransactionsTransactionIdLayoutIndexRoute,
+  }
+
+const AuthenticatedDashboardTransactionsTransactionIdLayoutRouteWithChildren =
+  AuthenticatedDashboardTransactionsTransactionIdLayoutRoute._addFileChildren(
+    AuthenticatedDashboardTransactionsTransactionIdLayoutRouteChildren,
   )
 
 interface AuthenticatedDashboardTransactionsNewLayoutRouteChildren {
@@ -239,6 +293,7 @@ const AuthenticatedDashboardTransactionsNewLayoutRouteWithChildren =
 interface AuthenticatedRouteChildren {
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
   AuthenticatedDashboardTransactionsLayoutRoute: typeof AuthenticatedDashboardTransactionsLayoutRouteWithChildren
+  AuthenticatedDashboardTransactionsTransactionIdLayoutRoute: typeof AuthenticatedDashboardTransactionsTransactionIdLayoutRouteWithChildren
   AuthenticatedDashboardTransactionsNewLayoutRoute: typeof AuthenticatedDashboardTransactionsNewLayoutRouteWithChildren
 }
 
@@ -246,6 +301,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   AuthenticatedDashboardTransactionsLayoutRoute:
     AuthenticatedDashboardTransactionsLayoutRouteWithChildren,
+  AuthenticatedDashboardTransactionsTransactionIdLayoutRoute:
+    AuthenticatedDashboardTransactionsTransactionIdLayoutRouteWithChildren,
   AuthenticatedDashboardTransactionsNewLayoutRoute:
     AuthenticatedDashboardTransactionsNewLayoutRouteWithChildren,
 }
