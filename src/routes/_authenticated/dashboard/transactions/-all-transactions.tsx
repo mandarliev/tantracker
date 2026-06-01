@@ -137,11 +137,17 @@ export function AllTransactions({
                   </TableCell>
                   <TableCell className="text-right">
                     <Button
+                      asChild
                       variant="outline"
                       size="icon"
                       aria-label="Edit transaction"
                     >
-                      <PencilIcon />
+                      <Link
+                        to={`/dashboard/transactions/$transactionId`}
+                        params={{ transactionId: transaction.id.toString() }}
+                      >
+                        <PencilIcon />
+                      </Link>
                     </Button>
                   </TableCell>
                 </TableRow>

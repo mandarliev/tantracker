@@ -30,7 +30,7 @@ export const transactionFormSchema = z.object({
     .max(300, 'Description must contain a maximum of 300 characters'),
 })
 
-type TransactionFormData = z.infer<typeof transactionFormSchema>
+export type TransactionFormData = z.infer<typeof transactionFormSchema>
 
 const formOpts = formOptions({
   defaultValues: {
@@ -48,14 +48,27 @@ const formOpts = formOptions({
 export function TransactionForm({
   categories,
   onSubmit,
+  transaction,
 }: {
   categories: (typeof categoriesTable.$inferSelect)[]
+  transaction?: any // Make it optional (for create vs edit)
   onSubmit: (data: TransactionFormData) => Promise<void>
 }) {
   const form = useForm({
     ...formOpts,
-    onSubmit: async ({ value }) => {
-      await onSubmit(value as TransactionFormData)
+    // Override defaultValues if we have an existing transaction
+    defaultValues: transaction
+      ? {
+          transactionType: transaction.type === 'income' ? 'income' : 'expense',
+          categoryId: transaction.categoryId,
+          amount: Math.abs(transaction.amount), // assuming amount can be negative
+          description: transaction.description || '',
+          transactionDate: new Date(transaction.transactionDate),
+        }
+      : formOpts.defaultValues,
+
+    validators: {
+      onSubmit: transactionFormSchema,
     },
   })
 
