@@ -36,7 +36,7 @@ export const getTransactionsByMonth = createServerFn({
       const result = await db
         .select({
           id: transactionsTable.id,
-          description: transactionsTable.amount,
+          description: transactionsTable.description,
           amount: transactionsTable.amount,
           transactionDate: transactionsTable.transactionDate,
           category: categoriesTable.name,

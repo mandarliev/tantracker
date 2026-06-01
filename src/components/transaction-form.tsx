@@ -67,8 +67,8 @@ export function TransactionForm({
         }
       : formOpts.defaultValues,
 
-    validators: {
-      onSubmit: transactionFormSchema,
+    onSubmit: async ({ value }) => {
+      await onSubmit(value as TransactionFormData)
     },
   })
 
