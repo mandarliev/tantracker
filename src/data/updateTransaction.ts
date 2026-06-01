@@ -4,7 +4,6 @@ import { db } from '#/db/index.ts'
 import { transactionsTable } from '#/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { auth } from '@clerk/tanstack-react-start/server'
-import { addDays } from 'date-fns'
 
 const schema = z.object({
   id: z.number(),
@@ -26,7 +25,7 @@ export const updateTransaction = createServerFn({
       const result = await db
         .update(transactionsTable)
         .set({
-          amount: data.amount, // Keep as number (don't convert to string)
+          amount: data.amount.toString(), // Keep as number (don't convert to string)
           categoryId: data.categoryId,
           transactionDate: data.transactionDate,
           description: data.description,

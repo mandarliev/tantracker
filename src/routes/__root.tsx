@@ -119,7 +119,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                   <Button variant="link" asChild className="text-white">
                     <SignInButton />
                   </Button>
-                  <div className="w-[1px] h-8 bg-zinc-700" />
+                  <div className="w-px h-8 bg-zinc-700" />
                   <Button variant="link" asChild className="text-white">
                     <SignUpButton />
                   </Button>
