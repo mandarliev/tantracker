@@ -2,6 +2,9 @@ import { createFileRoute } from '@tanstack/react-router'
 import { getRecentTransactions } from '#/data/getRecentTransactions'
 import { getAnnualCashflow } from '#/data/getAnnualCashflow'
 import { lazy } from 'react'
+import { getTransactionYearsRange } from '#/data/getTransactionYearsRange'
+import { CashFlow } from './-cashflow'
+import { z } from 'zod'
 
 const RecentTransactions = lazy(() =>
   import('./-recent-transactions').then((m) => ({
@@ -9,28 +12,42 @@ const RecentTransactions = lazy(() =>
   })),
 )
 
+const today = new Date()
+
+const searchSchema = z.object({
+  cfyear: z
+    .number()
+    .min(today.getFullYear() - 100)
+    .max(today.getFullYear())
+    .catch(today.getFullYear())
+    .optional(),
+})
+
 export const Route = createFileRoute('/_authenticated/dashboard/')({
+  validateSearch: searchSchema,
   component: RouteComponent,
+  loaderDeps: ({ search }) => ({ cfyear: search.cfyear }),
 
-  loader: async () => {
-    const currentYear = new Date().getFullYear()
-
-    const [transactions, cashflow] = await Promise.all([
+  loader: async ({ deps }) => {
+    const [transactions, cashflow, yearsRange] = await Promise.all([
       getRecentTransactions(),
       getAnnualCashflow({
-        data: { year: currentYear }, // ← Use current year dynamically
+        data: { year: deps.cfyear ?? today.getFullYear() }, // ← Use current year dynamically
       }),
+      getTransactionYearsRange(),
     ])
 
     return {
+      cfyear: deps.cfyear ?? today.getFullYear(),
       cashflow,
       transactions,
+      yearsRange,
     }
   },
 })
 
 function RouteComponent() {
-  const { transactions, cashflow } = Route.useLoaderData()
+  const { transactions, cashflow, yearsRange, cfyear } = Route.useLoaderData()
 
   console.log({ cashflow }) // for debugging
 
@@ -38,13 +55,7 @@ function RouteComponent() {
     <div className="max-w-7xl mx-auto py-5">
       <h1 className="text-4xl font-semibold pb-5">Dashboard</h1>
 
-      {/* You can add a Cashflow summary here later */}
-      {cashflow.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-2xl font-medium mb-3">Annual Cashflow</h2>
-          {/* TODO: Add chart or summary cards here */}
-        </div>
-      )}
+      <CashFlow year={cfyear} yearsRange={yearsRange} />
 
       <RecentTransactions transactions={transactions} />
     </div>
