@@ -1,4 +1,5 @@
-import { Card, CardHeader, CardTitle } from '#/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
+import { ChartContainer } from '#/components/ui/chart'
 import {
   Select,
   SelectContent,
@@ -7,13 +8,16 @@ import {
   SelectValue,
 } from '#/components/ui/select'
 import { useNavigate } from '@tanstack/react-router'
+import { Bar, BarChart } from 'recharts'
 
 export function CashFlow({
   yearsRange,
   year,
+  annualCashflow,
 }: {
   yearsRange: number[]
   year: number
+  annualCashflow: { month: number; income: number; expenses: number }[]
 }) {
   const navigate = useNavigate()
   return (
@@ -45,6 +49,20 @@ export function CashFlow({
           </Select>
         </CardTitle>
       </CardHeader>
+      <CardContent>
+        <ChartContainer
+          config={{
+            income: { label: 'Income', color: '#84cc16' },
+            expenses: { label: 'Expenses', color: 'f97316' },
+          }}
+          className="w-full h-75"
+        >
+          <BarChart data={annualCashflow}>
+            <Bar dataKey="income" fill="var(--color-income)" radius={4} />
+            <Bar dataKey="expense" fill="var(--color-expenses)" radius={4} />
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
     </Card>
   )
 }
