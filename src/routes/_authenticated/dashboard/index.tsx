@@ -5,6 +5,7 @@ import { lazy } from 'react'
 import { getTransactionYearsRange } from '#/data/getTransactionYearsRange'
 import { CashFlow } from './-cashflow'
 import { z } from 'zod'
+import LoadingSkeleton from '#/components/loading-skeleton'
 
 const RecentTransactions = lazy(() =>
   import('./-recent-transactions').then((m) => ({
@@ -24,6 +25,12 @@ const searchSchema = z.object({
 })
 
 export const Route = createFileRoute('/_authenticated/dashboard/')({
+  pendingComponent: () => (
+    <div className="max-w-7xl mx-auto py-5">
+      <h1 className="text-4xl font-semibold pb-5">Dashboard</h1>
+      <LoadingSkeleton />
+    </div>
+  ),
   validateSearch: searchSchema,
   component: RouteComponent,
   loaderDeps: ({ search }) => ({ cfyear: search.cfyear }),
