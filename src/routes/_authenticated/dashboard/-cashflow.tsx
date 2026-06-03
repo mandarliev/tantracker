@@ -1,5 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
-import { ChartContainer } from '#/components/ui/chart'
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '#/components/ui/chart'
 import {
   Select,
   SelectContent,
@@ -8,7 +12,9 @@ import {
   SelectValue,
 } from '#/components/ui/select'
 import { useNavigate } from '@tanstack/react-router'
-import { Bar, BarChart } from 'recharts'
+import { format } from 'date-fns'
+import numeral from 'numeral'
+import { Bar, BarChart, CartesianGrid, Legend, XAxis, YAxis } from 'recharts'
 
 export function CashFlow({
   yearsRange,
@@ -40,9 +46,9 @@ export function CashFlow({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {yearsRange.map((year) => (
-                <SelectItem key={year} value={year.toString()}>
-                  {year}
+              {yearsRange.map((y) => (
+                <SelectItem key={y} value={y.toString()}>
+                  {y}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -58,8 +64,38 @@ export function CashFlow({
           className="w-full h-75"
         >
           <BarChart data={annualCashflow}>
+            <CartesianGrid vertical={false} />
+            <YAxis
+              tickFormatter={(value) => {
+                return `$${numeral(value).format('0, 0')}`
+              }}
+            />
+            <XAxis
+              dataKey="month"
+              tickFormatter={(value) => {
+                return format(new Date(year, value - 1, 1), 'MMM')
+              }}
+            />
+            <ChartTooltip
+              content={
+                <ChartTooltipContent
+                  labelFormatter={(value, payload) => {
+                    console.log({ value, payload })
+                    return (
+                      <div>
+                        {format(
+                          new Date(year, payload[0]?.payload?.month - 1, 1),
+                          'MMM',
+                        )}
+                      </div>
+                    )
+                  }}
+                />
+              }
+            />
+            <Legend align="right" verticalAlign="top" />
             <Bar dataKey="income" fill="var(--color-income)" radius={4} />
-            <Bar dataKey="expense" fill="var(--color-expenses)" radius={4} />
+            <Bar dataKey="expenses" fill="var(--color-expenses)" radius={4} />
           </BarChart>
         </ChartContainer>
       </CardContent>
