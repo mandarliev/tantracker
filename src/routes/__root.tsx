@@ -130,6 +130,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                   showName
                   appearance={{
                     elements: {
+                      userButtonAvatarBox: {
+                        border: '1px solid white',
+                      },
                       userButtonOuterIdentifier: {
                         color: 'white',
                       },
